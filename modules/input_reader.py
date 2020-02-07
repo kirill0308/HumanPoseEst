@@ -57,19 +57,17 @@ class VideoReaderFromIntelRealsenseCAM:
         # depthwriter = cv2.VideoWriter(depth_path, cv2.VideoWriter_fourcc(*'XVID'), CAM_FPS, (frame_width, frame_height),
         #                               1)
         self.pipeline.start(config)
-
+        align_to = rs.stream.color
+        self.align = rs.align(align_to)
     def __iter__(self):
-        while True:
-            try:
-                self.frames = self.pipeline.wait_for_frames()
-                return self
-            except:
-                pass
-        # return self
+        return self
 
     def __next__(self):
+        self.frames = self.pipeline.wait_for_frames()
+        aligned_frames = self.align.process(self.frames)
+        color_frame = aligned_frames.get_color_frame()
         # depth_frame = self.frames.get_depth_frame()
-        color_frame = self.frames.get_color_frame()
+        # color_frame = self.frames.get_color_frame()
         if not color_frame:
             raise StopIteration
         color_image = np.asanyarray(color_frame.get_data())

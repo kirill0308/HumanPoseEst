@@ -201,3 +201,9 @@ if __name__ == '__main__':
                 break
             else:
                 delay = 1
+
+    if args.use_intelrealsensecamera:
+        try:
+            frame_provider.pipeline.stop()
+        except:
+            pass
