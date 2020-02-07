@@ -1,5 +1,6 @@
 import cv2
 import pyrealsense2 as rs
+import numpy as np
 
 class ImageReader:
     def __init__(self, file_names):
@@ -56,6 +57,7 @@ class VideoReaderFromIntelRealsenseCAM:
         # depthwriter = cv2.VideoWriter(depth_path, cv2.VideoWriter_fourcc(*'XVID'), CAM_FPS, (frame_width, frame_height),
         #                               1)
         self.pipeline.start(config)
+
     def __iter__(self):
         self.frames = self.pipeline.wait_for_frames()
         return self
@@ -65,4 +67,5 @@ class VideoReaderFromIntelRealsenseCAM:
         color_frame = self.frames.get_color_frame()
         if not color_frame:
             raise StopIteration
-        return color_frame
+        color_image = np.asanyarray(color_frame.get_data())
+        return color_image
