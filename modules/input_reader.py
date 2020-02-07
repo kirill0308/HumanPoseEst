@@ -57,8 +57,13 @@ class VideoReaderFromIntelRealsenseCAM:
         #                               1)
         self.pipeline.start(config)
     def __iter__(self):
-        self.frames = self.pipeline.wait_for_frames()
-        return self
+        while True:
+            try:
+                self.frames = self.pipeline.wait_for_frames()
+                return self
+            except:
+                pass
+        # return self
 
     def __next__(self):
         # depth_frame = self.frames.get_depth_frame()
