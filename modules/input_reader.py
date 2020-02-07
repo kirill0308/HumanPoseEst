@@ -57,15 +57,12 @@ class VideoReaderFromIntelRealsenseCAM:
         #                               1)
         self.pipeline.start(config)
     def __iter__(self):
-        self.cap = cv2.VideoCapture(self.file_name)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-        if not self.cap.isOpened():
-            raise IOError('Video {} cannot be opened'.format(self.file_name))
+        self.frames = self.pipeline.wait_for_frames()
         return self
 
     def __next__(self):
-        was_read, img = self.cap.read()
-        if not was_read:
+        # depth_frame = self.frames.get_depth_frame()
+        color_frame = self.frames.get_color_frame()
+        if not color_frame:
             raise StopIteration
-        return img
+        return color_frame

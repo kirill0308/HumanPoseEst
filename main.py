@@ -8,7 +8,7 @@ import numpy as np
 import socket
 import configparser
 
-from modules.input_reader import VideoReader, ImageReader
+from modules.input_reader import VideoReader, ImageReader, VideoReaderFromIntelRealsenseCAM
 from modules.draw import Plotter3d, draw_poses
 from modules.parse_poses import parse_poses
 
@@ -30,6 +30,7 @@ if __name__ == '__main__':
                         help='Required. Path to checkpoint with a trained model '
                              '(or an .xml file in case of OpenVINO inference).',
                         type=str, required=True)
+    parser.add_argument('--use-intelrealsensecamera', help='Optional. Use intel realsense camera.', action='store_true')
     parser.add_argument('--video', help='Optional. Path to video file or camera id.', type=str, default='')
     parser.add_argument('-d', '--device',
                         help='Optional. Specify the target device to infer on: CPU or GPU. '
@@ -96,7 +97,10 @@ if __name__ == '__main__':
 
     frame_provider = ImageReader(args.images)
     is_video = False
-    if args.video != '':
+    if args.use_intelrealsensecamera:
+        frame_provider = VideoReaderFromIntelRealsenseCAM(frame_width, frame_height, CAM_FPS)
+        is_video = True
+    elif args.video != '':
         frame_provider = VideoReader(args.video)
         is_video = True
     base_height = args.height_size
