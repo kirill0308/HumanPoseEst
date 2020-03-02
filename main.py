@@ -152,14 +152,14 @@ if __name__ == '__main__':
                 array.extend(poses_3d_edges_for_unity[j][0])
             array = " ".join(str(x) for x in array)
 
-            # try:
-            #     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            #     s.connect((TCP_IP, TCP_PORT))
-            #     s.sendall(bytes(array, encoding='utf-8'))
-            #     s.close()
-            #     # print(array)
-            # except:
-            #     pass
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((TCP_IP, TCP_PORT))
+                s.sendall(bytes(array, encoding='utf-8'))
+                s.close()
+                # print(array)
+            except:
+                pass
 
             # append to file
             # f = open("pos_sample_socket1.txt", "a+")
