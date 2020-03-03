@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import socket
 import configparser
+import imutils
 
 from modules.input_reader import VideoReader, ImageReader, VideoReaderFromIntelRealsenseCAM
 from modules.draw import Plotter3d, draw_poses
@@ -40,6 +41,9 @@ if __name__ == '__main__':
     parser.add_argument('--use-openvino',
                         help='Optional. Run network with OpenVINO as inference engine. '
                              'CPU, GPU, FPGA, HDDL or MYRIAD devices are supported.',
+                        action='store_true')
+    parser.add_argument('--rotation-to-vertical',
+                        help='Optional. rotate camera from horizontal to vertical',
                         action='store_true')
     parser.add_argument('--images', help='Optional. Path to input image(s).', nargs='+', default='')
     parser.add_argument('--height-size', help='Optional. Network input layer height size.', type=int, default=256)
@@ -115,6 +119,12 @@ if __name__ == '__main__':
         current_time = cv2.getTickCount()
         if frame is None:
             break
+
+        # check if ratation to vertical
+        if args.rotation_to_vertical:
+            # frame = np.rot90(frame, k=-1, axes=(0, 1))
+            frame = imutils.rotate_bound(frame, 90)
+
         input_scale = base_height / frame.shape[0]
         scaled_img = cv2.resize(frame, dsize=None, fx=input_scale, fy=input_scale)
         scaled_img = scaled_img[:, 0:scaled_img.shape[1] - (scaled_img.shape[1] % stride)]  # better to pad, but cut out for demo
